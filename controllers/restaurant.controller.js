@@ -39,4 +39,69 @@ const getRestaurants = async (req, res) => {
   }
 };
 
-module.exports = { addRestaurant, getRestaurants };
+const getCategories = async (req, res) => {
+  try {
+    const category = await Restaurant.distinct("category");
+    res.send(category);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({
+      message: "Some error occurred while fetching Categories",
+    });
+  }
+};
+
+const findByCategory = async (req, res) => {
+  try {
+    const { categoryName } = req.params;
+    const restaurants = await Restaurant.find({ category: categoryName });
+    res.send(restaurants);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({
+      message: "Some error occured while fetching the Restaurant.",
+    });
+  }
+};
+
+const getRestaurant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const oneRestaurant = await Restaurant.findOne({ _id: id });
+    if (!oneRestaurant) {
+      return res.status(404).send({
+        message: "No Restaurant found with the given ID",
+      });
+    }
+    res.send(oneRestaurant);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({
+      message: "Some error occured while fetching the Restaurant.",
+    });
+  }
+};
+
+const findByRating = async (req, res) => {
+  try {
+    const { ratingValue } = req.params;
+    const restaurantList = await Restaurant.find({
+      rating: { $gte: ratingValue },
+    });
+    res.send(restaurantList);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({
+      message: "Some error occured while fetching the Restaurant.",
+    });
+  }
+};
+
+module.exports = {
+  addRestaurant,
+  getRestaurants,
+  getCategories,
+  findByCategory,
+  getRestaurant,
+  findByRating,
+};
