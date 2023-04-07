@@ -3,7 +3,7 @@ const Restaurant = require("../models/restaurant.model");
 const addRestaurant = async (req, res) => {
   try {
     if (Object.keys(req.body).length === 0) {
-      return res.status(500).send({
+      return res.status(400).send({
         message: "Content cannot be empty",
       });
     }
