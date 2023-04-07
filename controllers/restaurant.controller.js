@@ -97,6 +97,82 @@ const findByRating = async (req, res) => {
   }
 };
 
+const updateRestaurant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (Object.keys(req.body).length === 0) {
+      return res.status(400).send({
+        message: "Restaurant Data is required.",
+      });
+    }
+    const { name, description, category, imageURL, location, phone, rating } =
+      req.body;
+    const updatedRestaurant = await Restaurant.findOneAndUpdate(
+      { _id: id },
+      {
+        name,
+        description,
+        category,
+        imageURL,
+        location,
+        phone,
+        rating,
+        updatedAt: Date.now(),
+      },
+      { new: true }
+    );
+    if (!updatedRestaurant) {
+      return res.status(200).send({
+        message: "No Restaurant found for given ID.",
+      });
+    }
+    res.send({ message: "Restaurant updated successfully." });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({
+      message: "Some error occured while fetching the Restaurant.",
+    });
+  }
+};
+
+const deleteRestaurant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedRestaurant = await Restaurant.findByIdAndDelete(id);
+    if (deletedRestaurant) {
+      res.status(200).send({
+        restaurant: deletedRestaurant,
+        message: "Restaurant deleted successfully.",
+      });
+    } else {
+      res.send({
+        restaurant: null,
+        message: "Restaurant deleted successfully.",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .send({ message: "Some error occured while deleting the Restaurant." });
+  }
+};
+
+const deleteAll = async (req, res) => {
+  try {
+    const deleteResult = await Restaurant.deleteMany({});
+    res.send({
+      restaurants: deleteResult,
+      message: "Restaurants deleted successfully.",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({
+      message: "Some error occured while deleting the Restaurant.",
+    });
+  }
+};
+
 module.exports = {
   addRestaurant,
   getRestaurants,
@@ -104,4 +180,7 @@ module.exports = {
   findByCategory,
   getRestaurant,
   findByRating,
+  updateRestaurant,
+  deleteRestaurant,
+  deleteAll,
 };
